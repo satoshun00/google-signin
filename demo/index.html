@@ -110,9 +110,11 @@ or like this if plus scopes are present
         offline="{{offline}}"
         is-authorized="{{isAuthorized}}"
         need-additional-auth="{{needAdditionalAuth}}"
-        on-google-signin-aware-success="handleSignIn"
         on-google-signin-offline-success="handleOffline"
-        on-google-signin-aware-signed-out="handleSignOut"></google-signin-aware>
+        on-google-signin-aware-signed-in="handleSignIn"
+        on-google-signin-aware-signed-out="handleSignOut"
+        on-google-signin-aware-success="handleAuthorize"
+        on-google-signin-aware-not-authorized="handleUnAuthorize"></google-signin-aware>
     <p>User name:<span>{{userName}}</span></p>
     <p>Testing <code>google-signin-aware</code> events: <span>{{status}}</span></p>
     <p>Testing <code>google-signin-offline</code> events: <span>{{offlineCode}}</span></p>
@@ -136,6 +138,12 @@ or like this if plus scopes are present
       // console.log('[Aware] Signout Response', response);
       this.userName = 'N/A';
     };
+    aware.handleAuthorize = function(response) {
+      // console.log('[Aware] Authorize Response', response);
+    }
+    aware.handleUnAuthorize = function(response) {
+      // console.log('[Aware] Unauthorize Response', response);
+    }
     aware.disconnect = function() {
       var b = document.querySelector('google-signin');
       var currentUser = gapi.auth2.getAuthInstance().currentUser.get();
