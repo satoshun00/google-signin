@@ -193,12 +193,9 @@
 
       handleUserUpdate: function(newPrimaryUser) {
         // update and broadcast currentUser
-        var isSignedIn = newPrimaryUser.isSignedIn();
-        if (isSignedIn != this._signedIn) {
-          this._signedIn = isSignedIn;
-          for (var i=0; i<this.signinAwares.length; i++) {
-            this.signinAwares[i]._setSignedIn(isSignedIn);
-          }
+        this._signedIn = newPrimaryUser.isSignedIn();
+        for (var i=0; i<this.signinAwares.length; i++) {
+          this.signinAwares[i]._updateSignInStatus(newPrimaryUser);
         }
 
         // update granted scopes
@@ -646,6 +643,19 @@ You can bind to `isAuthorized` property to monitor authorization state.
         this._updateScopeStatus();
       },
 
+      _updateSignInStatus: function(user) {
+        var newSignedIn = user.isSignedIn();
+        if (newSignedIn !== this.signedIn) {
+          this._setSignedIn(newSignedIn);
+        }
+        if (newSignedIn) {
+          this.fire('google-signin-aware-signed-in', user);
+        }
+        else {
+          this.fire('google-signin-aware-signed-out', user);
+        }
+      },
+
       _updateScopeStatus: function(user) {
         var newAuthorized = this.signedIn && AuthEngine.hasGrantedScopes(this.scopes);
         if (newAuthorized !== this.isAuthorized) {
@@ -654,7 +664,7 @@ You can bind to `isAuthorized` property to monitor authorization state.
             this.fire('google-signin-aware-success', user);
           }
           else {
-            this.fire('google-signin-aware-signed-out', user);
+            this.fire('google-signin-aware-not-authorized', user);
           }
         }
       },
